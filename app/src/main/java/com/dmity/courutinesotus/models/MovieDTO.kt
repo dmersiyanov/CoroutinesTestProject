@@ -2,7 +2,7 @@ package com.dmity.courutinesotus.models
 
 import com.google.gson.annotations.SerializedName
 
-data class FilmDTO(
+data class MovieDTO(
 
     @field:SerializedName("overview")
     val overview: String? = null,
