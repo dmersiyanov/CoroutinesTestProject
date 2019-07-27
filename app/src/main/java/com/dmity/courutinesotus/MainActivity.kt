@@ -1,30 +1,20 @@
 package com.dmity.courutinesotus
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dmity.courutinesotus.adapter.MoviesAdapter
+import com.dmity.courutinesotus.base.BaseActivity
+import com.dmity.courutinesotus.base.BaseRepository
 import com.dmity.courutinesotus.models.MovieDTO
-import com.dmity.courutinesotus.network.Api
-import com.dmity.courutinesotus.network.BaseRepository
-import com.dmity.courutinesotus.network.CountriesService
+import com.dmity.courutinesotus.network.MoviesService
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
-    private val parentJob = Job()
-
-    private val coroutineContext: CoroutineContext
-        get() = parentJob + Dispatchers.Default
-
-    private val scope = CoroutineScope(coroutineContext)
-
-
-    val adapter: MoviesAdapter by lazy { MoviesAdapter(this::onMovieClick) }
-
+    private val adapter: MoviesAdapter by lazy { MoviesAdapter(this::onMovieClick) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +27,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         fetchMovies()
+
     }
+
 
     private fun initRecycler() {
         rvFilmsList.apply {
@@ -46,20 +38,17 @@ class MainActivity : AppCompatActivity() {
             layoutManager = linearLayoutManager
         }
     }
+
     private fun fetchMovies() {
-
-        val service = Api.getInstance().create(CountriesService::class.java)
-
         scope.launch {
             try {
                 val response = BaseRepository().safeApiCall(
-                    call = { service.getMovies(CountriesService.API_KEY) },
+                    call = { service.getMovies(MoviesService.API_KEY) },
                     errorMessage = "error"
                 )
 
                 withContext(Dispatchers.Main) {
                     adapter.setItems(response?.results.toNotNullList())
-                    toast(response?.totalResults.toString())
                 }
 
             } catch (e: Exception) {
@@ -68,14 +57,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun toast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    private fun onMovieClick(movie: MovieDTO) {
+        FilmDetailActivity.display(
+            movieId = movie.id ?: -1,
+            context = this
+        )
     }
 
-    private fun onMovieClick(moview: MovieDTO) {
-        toast(moview.title.toString())
-    }
-
-    private inline fun <reified T : Any> List<T?>?.toNotNullList() = this?.filterNotNull().orEmpty()
 
 }
