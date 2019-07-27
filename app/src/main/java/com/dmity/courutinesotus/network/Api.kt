@@ -7,18 +7,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object Api {
+class Api {
 
-    private var retrofit: Retrofit
+    private var retrofit: Retrofit? = null
     private var logging = HttpLoggingInterceptor()
-    private const val BASE_URL = "https://api.themoviedb.org/3/"
-    private const val REQUEST_TIMEOUT = 60L
 
     init {
         retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(getHttpLogClient())
             .build()
     }
 
@@ -35,9 +32,19 @@ object Api {
         return httpClient.build()
     }
 
-    fun getInstance(): Retrofit {
+    fun getInstance(): Retrofit? {
+        if (retrofit == null) {
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(getHttpLogClient())
+                .build()
+        }
         return retrofit
     }
 
-
+    companion object {
+        private const val BASE_URL = "https://api.themoviedb.org/3/"
+        private const val REQUEST_TIMEOUT = 60L
+    }
 }
