@@ -1,7 +1,6 @@
-package com.dmity.courutinesotus.base
+package com.dmity.courutinesotus.network
 
 import android.util.Log
-import com.dmity.courutinesotus.network.Result
 import retrofit2.Response
 import java.io.IOException
 
