@@ -11,7 +11,7 @@ data class FilmsResponse(
     val totalPages: Int? = null,
 
     @field:SerializedName("results")
-    val results: List<MovieDTO?>? = null,
+    val results: List<FilmDTO?>? = null,
 
     @field:SerializedName("total_results")
     val totalResults: Int? = null
